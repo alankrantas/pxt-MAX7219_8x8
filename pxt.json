@@ -1,10 +1,9 @@
 {
     "name": "pxt-max7219_8x8",
-    "version": "0.0.0",
-    "description": "",
+    "version": "0.0.1",
+    "description": "MakeCode editor extension for single or multiple MAX7219 8x8 matrix LED modules",
     "dependencies": {
         "core": "*",
-        "radio": "*"
     },
     "files": [
         "README.md",
@@ -14,5 +13,5 @@
     "testFiles": [
         "test.ts"
     ],
-    "public": false
+    "public": true
 }
