@@ -1,6 +1,6 @@
 # BBC micro:bit MakeCode editor extension for MAX7219 8x8 matrix LED modules
 
-This extension works with single or multiple MAX7219 8x8 LED matrix display modules. Add this extension by go to Advanced -? extension and copy/paste [https://github.com/alankrantas/pxt-MAX7219_8x8](https://github.com/alankrantas/pxt-MAX7219_8x8) in the search box. Press enter and click the extension.
+This extension works with single or multiple MAX7219 8x8 LED matrix display modules. Add this extension by go to Advanced -> +extension and copy/paste [https://github.com/alankrantas/pxt-MAX7219_8x8](https://github.com/alankrantas/pxt-MAX7219_8x8) into the search box. Press enter and click the extension to download it.
 
 ![led-matrix-display-8x8-dots-rood-max7219-bovenkant](https://user-images.githubusercontent.com/44191076/50701188-d0ba2400-1087-11e9-9588-d57f678010d7.jpg)
 
