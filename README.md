@@ -58,6 +58,8 @@ You can also print a custom character or image on the LED display. Use [this 8x8
 
 ![3](https://user-images.githubusercontent.com/44191076/50700687-2261af00-1086-11e9-8451-aff7c771dc64.jpg)
 
+![microbit-screenshot 3](https://user-images.githubusercontent.com/44191076/50702213-31972b80-108b-11e9-928e-9e4a991c5dbb.png)
+
 ![img_0001](https://user-images.githubusercontent.com/44191076/50700621-ff36ff80-1085-11e9-942d-0ef1c3cef84f.JPG)
 
 So far the extension only contains a simple ASCII character library. However, you can add custom character or images into the library by using some unusual [Unicode characters](https://en.wikipedia.org/wiki/List_of_Unicode_characters) as tokens.
