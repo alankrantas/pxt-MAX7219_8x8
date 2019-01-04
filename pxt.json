@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "description": "MakeCode editor extension for single or multiple MAX7219 8x8 matrix LED modules",
     "dependencies": {
-        "core": "*",
+        "core": "*"
     },
     "files": [
         "README.md",
