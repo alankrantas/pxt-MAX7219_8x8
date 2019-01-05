@@ -5,7 +5,7 @@
 //% weight=100 color=#006d19 icon="\uf00a" block="MAX7219 8x8"
 namespace MAX7219_Matrix {
 
-    //Regusters (command) for MAX7219
+    //Registers (command) for MAX7219
     const _NOOP = 0 // no-op (do nothing, doesn't change current status)
     const _DIGIT = [1, 2, 3, 4, 5, 6, 7, 8] // digit (LED column)
     const _DECODEMODE = 9 // decode mode (1=on, 0-off; for 7-segment display on MAX7219, no usage here)
@@ -295,6 +295,7 @@ namespace MAX7219_Matrix {
     //% advanced=true
     export function addCustomChr(chr: string, customCharArray: number[]) {
         if (chr != null && chr.length == 1 && customCharArray != null) {
+            // add new character
             font.push(chr)
             font_matrix.push(customCharArray)
         }
@@ -310,9 +311,12 @@ namespace MAX7219_Matrix {
     export function fontDemo(delay: number) {
         let offsetIndex = 0
         clearAll()
+        // print all characters on all matrixs
         for (let i = 1; i < font_matrix.length; i++) {
+            // print two blank spaces to "reset" a matrix
             displayCustomCharacter(font_matrix[0], offsetIndex * 8, false)
             displayCustomCharacter(font_matrix[0], offsetIndex * 8 + 4, false)
+            // print a character
             displayCustomCharacter(font_matrix[i], offsetIndex * 8, false)
             if (offsetIndex == _matrixNum - 1) {
                 offsetIndex = 0
@@ -322,7 +326,7 @@ namespace MAX7219_Matrix {
             basic.pause(delay)
         }
         basic.pause(delay)
-        //clearAll()
+        clearAll()
     }
 
     /**
@@ -567,7 +571,7 @@ namespace MAX7219_Matrix {
         }
     }
 
-    // fonts borrowed from https://github.com/lyle/matrix-led-font/blob/master/src/index.js
+    // ASCII fonts borrowed from https://github.com/lyle/matrix-led-font/blob/master/src/index.js
 
     let font = [" ", "!", "\"", "#", "$", "%", "&", "\'", "(", ")",
         "*", "+", ",", "-", ".", "/",
