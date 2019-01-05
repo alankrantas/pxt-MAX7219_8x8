@@ -36,7 +36,7 @@ In my test the 3.3V power from micro:bit itself (90mA) is enough to power 4 MAX7
 
 This extension assumes that you arrange MAX7219 modules in a "chain", that they linked into a larger horizonal LED display.
 
-The one nearest to micro:bit on the left has the highest index number, and the furthest one (far right) has index of 0.
+The one nearest to micro:bit on the left has the highest index number (total num - 1), and the furthest one (far right) has index of 0.
 
 ![img_0004](https://user-images.githubusercontent.com/44191076/50699988-5e941000-1084-11e9-841e-5ff173872540.JPG)
 
