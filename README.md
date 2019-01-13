@@ -12,25 +12,25 @@ This extension works with single or multiple MAX7219 8x8 LED matrix display modu
 
 For the first module, connect it to micro:bit as follows:
 
-* VCC -> 3V
+* VCC -> 3.3V or 5V (both works)
 * GND -> GND
-* DIN (LOAD pin) -> any pin you want (in the example we used P16)
-* CS (MOSI or MO in SPI) -> P15
-* CLK (SCK in SPI) -> P13
+* DIN (MOSI or MO in SPI) -> default P15
+* CS (LOAD pin) -> any pin you want (default P16)
+* CLK (SCK in SPI) -> default P13
 
-MISO (P14) is not used.
+MISO or MI (default P14) is not used.
 
-Of course, you can reassign these SPI pins in anyway you want; just use the setup block.
+Of course, you can reassign these SPI pins in anyway you want; just use the setup block and remember to set the correct number of matrixs.
 
 ![img_0003](https://user-images.githubusercontent.com/44191076/50699442-d95c2b80-1082-11e9-8f68-9f0b0a47eeb4.JPG)
 
 The rest of the modules (if any) connect as follows:
 
-![untitled sketch_bb](https://user-images.githubusercontent.com/44191076/50699433-d103f080-1082-11e9-84a6-e5323c2e706c.png)
+![untitled sketch_bb](https://user-images.githubusercontent.com/44191076/51085259-ae07c980-1771-11e9-8b82-60d474c336fd.jpg)
 
-It's basicly the same as the first one, except all module's DIN connects to DOUT on the previous one.
+It's basicly the same as the first one, except all module's DIN connects to DOUT on the previous one. Be noted that the order of the pins is slightly different (for example, CS and CLK) from the module I used.
 
-In my test the 3.3V power from micro:bit itself (90mA) is enough to power 4 MAX7219 modules. You may need more for a longer matrix chain.
+In my test the 3.3V power from micro:bit itself (90mA) is sufficient to power 4 chained MAX7219 modules. You may need more for a longer matrix chain. Using 5V will make the LEDs a bit brighter, which is more preferable for some people.
 
 ## Modules Index
 
