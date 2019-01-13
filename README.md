@@ -12,7 +12,7 @@ This extension works with single or multiple MAX7219 8x8 LED matrix display modu
 
 For the first module, connect it to micro:bit as follows:
 
-* VCC -> 3.3V or 5V (both works)
+* VCC -> 3.3V or 5V (both works; using 5V make the LEDs a bit brighter, which is more preferable for some people.)
 * GND -> GND
 * DIN (MOSI or MO in SPI) -> default P15
 * CS (LOAD pin) -> any pin you want (default P16)
@@ -28,21 +28,23 @@ The rest of the modules (if any) connect as follows:
 
 ![untitled sketch_bb](https://user-images.githubusercontent.com/44191076/51085259-ae07c980-1771-11e9-8b82-60d474c336fd.jpg)
 
-It's basicly the same as the first one, except all module's DIN connects to DOUT on the previous one. Be noted that the order of the pins is slightly different (for example, CS and CLK) from the module I used.
+It's basicly the same as the first one, except all module's DIN connects to DOUT on the previous one.
 
-In my test the 3.3V power from micro:bit itself (90mA) is sufficient to power 4 chained MAX7219 modules. You may need more for a longer matrix chain. Using 5V will make the LEDs a bit brighter, which is more preferable for some people.
+Be noted that in the wiring picture above the order of the pins are slightly different (for example, CS and CLK) from the module I used.
+
+In my test the 3.3V power from micro:bit itself (90mA) is sufficient to power 4 chained MAX7219 modules. You may need more for a longer matrix chain.
 
 ## Modules Index
 
 This extension assumes that you arrange MAX7219 modules in a "chain", that they linked into a larger horizonal LED display.
 
-The one nearest to micro:bit on the left has the highest index number (total num - 1), and the furthest one (far right) has index of 0.
+The one nearest to micro:bit on the left has the highest index number (total number - 1), and the furthest one (far right) has index of 0.
 
 ![img_0004](https://user-images.githubusercontent.com/44191076/50699988-5e941000-1084-11e9-841e-5ff173872540.JPG)
 
 ## Display Mode: Text Printing
 
-There are currently two display modes supported.
+There are currently two built-in display modes.
 
 First is the simple text printing mode; it will use the whole LED display to show or scroll a string.
 
@@ -52,7 +54,9 @@ First is the simple text printing mode; it will use the whole LED display to sho
 
 The scrolling text block shows the whole sentence by scrolling it from right to left, speed is adjustable. However, the program will not contiune to do anything until scrolling is finished.
 
-The display text block prints words on the LED display without (perceivable) delay, and you can choose offset (the starting point along the LED display). This is more sutiable for very short texts or characters, and you can print them seperatly along the LED display. (You may have to set the clear screen option as false.)
+Be noted that if you input a very very long string, the micro:bit may run out of memory and show a sad face with the error code 20.
+
+Next, the display text block prints words on the LED display without (perceivable) delays, and you can choose offset (the starting point along the LED display, from -8 to the end of line). This is more sutiable for very short texts or characters, and you can print them seperatly along the LED display. (You will have to set the clear screen option to false.)
 
 You can also print a custom character or image on the LED display. Use [this 8x8 LED generator](http://robojax.com/learn/arduino/8x8LED/) (right side is "up") and copy the byte array as input string. Paste the text in the block you find in "more" section; it would transform the text into a number array which can be used to print special characters.
 
@@ -62,7 +66,9 @@ You can also print a custom character or image on the LED display. Use [this 8x8
 
 ![img_0001](https://user-images.githubusercontent.com/44191076/50700621-ff36ff80-1085-11e9-942d-0ef1c3cef84f.JPG)
 
-So far the extension only contains a simple ASCII character library. However, you can add custom character or images into the library by using some unusual [Unicode characters](https://en.wikipedia.org/wiki/List_of_Unicode_characters) as tokens.
+So far the extension only contains a simple ASCII character library. If you input a character that's not in the library, it will not be displayed (skipped) anyway. However, you can add custom character or images into the library by using some unusual [Unicode characters](https://en.wikipedia.org/wiki/List_of_Unicode_characters) as index/tokens.
+
+There's a block that displays all the characters in the library.
 
 ## Display Mode: Matrix Setting
 
