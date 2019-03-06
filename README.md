@@ -1,6 +1,8 @@
 # BBC micro:bit MakeCode editor extension for MAX7219 8x8 matrix LED modules
 
-This extension works with single or multiple MAX7219 8x8 LED matrix display modules. Add this extension by go to Advanced -> +extension and copy/paste [https://github.com/alankrantas/pxt-MAX7219_8x8](https://github.com/alankrantas/pxt-MAX7219_8x8) into the search box. Press enter and click the extension to download it.
+This extension works with single or multiple MAX7219 8x8 LED matrix display modules.
+
+Add this extension by go to Advanced -> +extension and copy/paste [https://github.com/alankrantas/pxt-MAX7219_8x8](https://github.com/alankrantas/pxt-MAX7219_8x8) into the search box. Press enter and click the extension to download it.
 
 ![led-matrix-display-8x8-dots-rood-max7219-bovenkant](https://user-images.githubusercontent.com/44191076/50701188-d0ba2400-1087-11e9-9588-d57f678010d7.jpg)
 
@@ -10,7 +12,7 @@ This extension works with single or multiple MAX7219 8x8 LED matrix display modu
 
 ## Modules Wiring
 
-For the first module, connect it to micro:bit as follows:
+For the module at the head of the chain, connect it to micro:bit as follows:
 
 * VCC -> 3.3V or 5V (both works; using 5V make the LEDs a bit brighter, which is more preferable for some people.)
 * GND -> GND
@@ -24,7 +26,7 @@ Of course, you can reassign these SPI pins in anyway you want; just use the setu
 
 ![img_0003](https://user-images.githubusercontent.com/44191076/50699442-d95c2b80-1082-11e9-8f68-9f0b0a47eeb4.JPG)
 
-The rest of the modules (if any) connect as follows:
+The rest of the modules (if any) are connected as follows:
 
 ![untitled sketch_bb](https://user-images.githubusercontent.com/44191076/51085259-ae07c980-1771-11e9-8b82-60d474c336fd.jpg)
 
@@ -34,6 +36,18 @@ Be noted that in the wiring picture above the order of the pins are slightly dif
 
 In my test the 3.3V power from micro:bit itself (90mA) is sufficient to power 4 chained MAX7219 modules. You may need more for a longer matrix chain.
 
+## Using 32x8 MAX7219 Modules / Matrix Rotation
+
+If you are using 32x8 MAX7219 module like below, you only need to connect the head pin to micro:bit.
+
+![max7219-dot - main-500x500](https://user-images.githubusercontent.com/44191076/53904356-d2e93080-4080-11e9-96bd-c1c3e5111a4b.jpg)
+
+However, each matrix in the chain are arranged in different direction, which requires rotation of the display. Switch the "Rotate clockwise" option to true, and all the stuff displayed on LEDs would turn 90 degrees clockwise.
+
+![1](https://user-images.githubusercontent.com/44191076/53904763-c5807600-4081-11e9-8de3-ea5b05bea035.jpg)
+
+Be noted that the extra process will slow down the text scrolling/refreshing speed. You can try to reduce the scrolling delay time.
+
 ## Modules Index
 
 This extension assumes that you arrange MAX7219 modules in a "chain", that they linked into a larger horizonal LED display.
@@ -42,7 +56,7 @@ The one nearest to micro:bit on the left has the highest index number (total num
 
 ![img_0004](https://user-images.githubusercontent.com/44191076/50699988-5e941000-1084-11e9-841e-5ff173872540.JPG)
 
-## Display Mode: Text Printing
+## Text Scrolling
 
 There are currently two built-in display modes.
 
@@ -55,6 +69,8 @@ First is the simple text printing mode; it will use the whole LED display to sho
 The scrolling text block shows the whole sentence by scrolling it from right to left, speed is adjustable. However, the program will not contiune to do anything until scrolling is finished.
 
 Be noted that if you input a very very long string, the micro:bit may run out of memory and show a sad face with the error code 20.
+
+## Text Printing
 
 Next, the display text block prints words on the LED display without (perceivable) delays, and you can choose offset (the starting point along the LED display, from -8 to the end of line). This is more sutiable for very short texts or characters, and you can print them seperatly along the LED display. (You will have to set the clear screen option to false.)
 
@@ -70,7 +86,7 @@ So far the extension only contains a simple ASCII character library. If you inpu
 
 There's a block that displays all the characters in the library.
 
-## Display Mode: Matrix Setting
+## Direct Matrix Array Setting
 
 The second mode allows you to get/modify a 8x8 number array variable and use it to directly set any or all of the modules.
 
