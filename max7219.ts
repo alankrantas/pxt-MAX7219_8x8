@@ -17,21 +17,25 @@ namespace MAX7219_Matrix {
     let _pinCS = DigitalPin.P16 // LOAD pin, 0=ready to receive command, 1=command take effect
     let _matrixNum = 1 // number of MAX7219 matrix linked in the chain
     let _displayArray: number[] = [] // display array to show accross all matrixs
+    let _rotate = false
 
     /**
     * Setup/reset MAX7219s
     */
-    //% block="Setup MAX7219:|Number of matrixs $num|CS(LOAD) = $cs|MOSI(DIN) = $mosi|MISO(not used) = $miso|SCK(CLK) = $sck"
+    //% block="Setup MAX7219:|Number of matrixs $num|Rotate: $rotate|CS(LOAD) = $cs|MOSI(DIN) = $mosi|MISO(not used) = $miso|SCK(CLK) = $sck"
     //% num.min=1 num.defl=1
+    //% rotate.defl=false
+    //% blockExternalInputs=false
     //% cs.defl=DigitalPin.P16
     //% mosi.defl=DigitalPin.P15
     //% miso.defl=DigitalPin.P14
     //% sck.defl=DigitalPin.P13
     //% group="1. Setup"
-    export function setup(num: number, cs: DigitalPin, mosi: DigitalPin, miso: DigitalPin, sck: DigitalPin) {
-        // set internal variables        
+    export function setup(num: number,rotate: boolean, cs: DigitalPin, mosi: DigitalPin, miso: DigitalPin, sck: DigitalPin) {
+        // set internal variables
         _pinCS = cs
         _matrixNum = num
+        _rotate = rotate
         // prepare display array (for displaying texts; add extra 8 columns at each side as buffers)
         for (let i = 0; i < (num + 2) * 8; i++) {
             _displayArray.push(0)
@@ -82,6 +86,25 @@ namespace MAX7219_Matrix {
                 }
             }
             pins.digitalWritePin(_pinCS, 1) // LOAD=HIGH, commands take effect
+        }
+    }
+
+    /**
+    * (internal function) rotate matrix if MAX7219 blocks are connected differently
+    */
+    function _rotateOneMatrix(matrix: number[], offset: number){
+        let output: number[] = []
+        for (let i=0;i<8;i++){
+            output.push(0);
+        }
+
+        for (let i=0;i<8;i++){
+            for(let j = 0; j < 8; ++j)
+                output[7-j] += Math.pow(2,i) * ((matrix[offset+i] >> j) & 1);
+        }
+
+        for (let i=0;i<8;i++){
+            matrix[offset+i] = output[i];
         }
     }
 
@@ -138,10 +161,21 @@ namespace MAX7219_Matrix {
             }
             // write every 8 columns of display array (visible area) to each MAX7219s
             let matrixCountdown = _matrixNum - 1
+
+            //quick fix - rotate copy matrix each time only to rotate rows
+            let _displayArrayCopy: number[] = []
+            if(_rotate) {
+              for (let m=0;m<_displayArray.length;m++){
+                  _displayArrayCopy.push(_displayArray[m])
+              }
+            }
+
             for (let j = 8; j < _displayArray.length - 8; j += 8) {
                 if (matrixCountdown < 0) break
+                if(_rotate) _rotateOneMatrix(_displayArrayCopy,j)
                 for (let k = j; k < j + 8; k++) {
-                    _registerForOne(_DIGIT[k - j], _displayArray[k], matrixCountdown)
+                    if(_rotate) {_registerForOne(_DIGIT[k - j], _displayArrayCopy[k], matrixCountdown) } else {
+                    _registerForOne(_DIGIT[k - j], _displayArray[k], matrixCountdown) }
                 }
                 matrixCountdown -= 1
             }
@@ -151,8 +185,8 @@ namespace MAX7219_Matrix {
     }
 
     /**
-    * Print a text accross the chain of MAX7219 matrixs at a specific spot. 
-    * Offset value -8 ~ last column of matrixs. 
+    * Print a text accross the chain of MAX7219 matrixs at a specific spot.
+    * Offset value -8 ~ last column of matrixs.
     * You can choose to clear the screen or not (if not it can be used to print multiple string on the MAX7219 chain).
     */
     //% block="Display text $text|offset $offset|clear screen first $clear"
@@ -196,6 +230,7 @@ namespace MAX7219_Matrix {
         let matrixCountdown = _matrixNum - 1
         for (let i = 8; i < _displayArray.length - 8; i += 8) {
             if (matrixCountdown < 0) break
+            if (_rotate) _rotateOneMatrix(_displayArray,i)
             for (let j = i; j < i + 8; j++) {
                 _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
             }
@@ -204,9 +239,9 @@ namespace MAX7219_Matrix {
     }
 
     /**
-    * Print a custom character from a number array on the chain of MAX7219 matrixs at a specific spot. 
+    * Print a custom character from a number array on the chain of MAX7219 matrixs at a specific spot.
     * Each number in the array is 0-255, the decimal version of column's byte number.
-    * Offset value -8 ~ last column of matrixs. 
+    * Offset value -8 ~ last column of matrixs.
     * You can choose to clear the screen or not (if not it can be used to print multiple string on the MAX7219 chain).
     */
     //% block="Display custom character from|number array $customCharArray|offset $offset|clear screen first $clear"
@@ -233,6 +268,7 @@ namespace MAX7219_Matrix {
             let matrixCountdown = _matrixNum - 1
             for (let i = 8; i < _displayArray.length - 8; i += 8) {
                 if (matrixCountdown < 0) break
+                if (_rotate) _rotateOneMatrix(_displayArray,i)
                 for (let j = i; j < i + 8; j++) {
                     _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
                 }
@@ -242,7 +278,7 @@ namespace MAX7219_Matrix {
     }
 
     /**
-    * Return a number array calculated from a 8x8 LED byte array 
+    * Return a number array calculated from a 8x8 LED byte array
     * (example: B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000)
     */
     //% block="Get custom character number array|from byte-array string $text"
