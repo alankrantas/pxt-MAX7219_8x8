@@ -42,6 +42,14 @@ The one nearest to micro:bit on the left has the highest index number (total num
 
 ![img_0004](https://user-images.githubusercontent.com/44191076/50699988-5e941000-1084-11e9-841e-5ff173872540.JPG)
 
+### Rotate Option  
+
+In case of already connected blocks, it's usually 90 deg. rotated matrixs, so in "Setup MAX7219", you should choose "true" for "Rotate" option.  
+
+Typical example of 4 in 1 matrixs below:  
+![img_0007](https://www.cytron.io/image/cache/catalog/products/DS-MAX7219-4/DS-MAX7219-4-800x800.jpg)
+
+
 ## Display Mode: Text Printing
 
 There are currently two built-in display modes.
