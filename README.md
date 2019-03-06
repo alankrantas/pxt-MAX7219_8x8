@@ -44,23 +44,21 @@ If you are using 32x8 MAX7219 module like below, you only need to connect the he
 
 However, each matrix in the chain are arranged in different directions, which require display rotation. Switch the "Rotate clockwise" option to true, and all the stuff displayed on LEDs would turn 90 degrees clockwise.
 
-![1](https://user-images.githubusercontent.com/44191076/53904763-c5807600-4081-11e9-8de3-ea5b05bea035.jpg)
+![1](https://user-images.githubusercontent.com/44191076/53906195-3ecd9800-4085-11e9-9992-a803f705ff79.jpg)
 
 Be noted that the extra process slows down the text scrolling/refreshing speed. You can try to reduce the scrolling delay time.
 
-## Modules Index
+## Index of Modules
 
 This extension assumes that you arrange MAX7219 modules in a "chain", that they linked into a larger horizonal LED display.
 
-The one nearest to micro:bit on the left has the highest index number (total number - 1), and the furthest one (far right) has index of 0.
+The one nearest to micro:bit on the left has the highest index number (total number - 1), and the furthest one (far right) has index of 0. Index is useful if you want to print something to a specific module.
 
 ![img_0004](https://user-images.githubusercontent.com/44191076/50699988-5e941000-1084-11e9-841e-5ff173872540.JPG)
 
 ## Text Scrolling
 
-There are currently two built-in display modes.
-
-First is the simple text printing mode; it will use the whole LED display to show or scroll a string.
+There are currently two built-in display modes. First is the simple text printing mode; it will use the whole LED display to show or scroll a string.
 
 ![microbit-screenshot](https://user-images.githubusercontent.com/44191076/50701355-84bbaf00-1088-11e9-9744-1df09ab2f2cd.png)
 
