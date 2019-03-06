@@ -6,32 +6,35 @@
 namespace MAX7219_Matrix {
 
     //Registers (command) for MAX7219
-    const _NOOP = 0 // no-op (do nothing, doesn't change current status)
-    const _DIGIT = [1, 2, 3, 4, 5, 6, 7, 8] // digit (LED column)
-    const _DECODEMODE = 9 // decode mode (1=on, 0-off; for 7-segment display on MAX7219, no usage here)
-    const _INTENSITY = 10 // intensity (LED brightness level, 0-15)
-    const _SCANLIMIT = 11 // scan limit (number of scanned digits)
-    const _SHUTDOWN = 12 // turn on (1) or off (0)
-    const _DISPLAYTEST = 15 // force all LEDs light up, no usage here
+    const _NOOP: number = 0 // no-op (do nothing, doesn't change current status)
+    const _DIGIT: number[] = [1, 2, 3, 4, 5, 6, 7, 8] // digit (LED column)
+    const _DECODEMODE: number = 9 // decode mode (1=on, 0-off; for 7-segment display on MAX7219, no usage here)
+    const _INTENSITY: number = 10 // intensity (LED brightness level, 0-15)
+    const _SCANLIMIT: number = 11 // scan limit (number of scanned digits)
+    const _SHUTDOWN: number = 12 // turn on (1) or off (0)
+    const _DISPLAYTEST: number = 15 // force all LEDs light up, no usage here
 
-    let _pinCS = DigitalPin.P16 // LOAD pin, 0=ready to receive command, 1=command take effect
-    let _matrixNum = 1 // number of MAX7219 matrix linked in the chain
+    let _pinCS: DigitalPin = DigitalPin.P16 // LOAD pin, 0=ready to receive command, 1=command take effect
+    let _matrixNum: number = 1 // number of MAX7219 matrix linked in the chain
     let _displayArray: number[] = [] // display array to show accross all matrixs
+    let _isRotate: boolean = false // rotate display clockwise (for head-to-head linked modules)
 
     /**
     * Setup/reset MAX7219s
     */
-    //% block="Setup MAX7219:|Number of matrixs $num|CS(LOAD) = $cs|MOSI(DIN) = $mosi|MISO(not used) = $miso|SCK(CLK) = $sck"
+    //% block="Setup MAX7219:|Number of matrixs $num|CS(LOAD) = $cs|MOSI(DIN) = $mosi|MISO(not used) = $miso|SCK(CLK) = $sck|Rotate clockwise $rotate"
     //% num.min=1 num.defl=1
     //% cs.defl=DigitalPin.P16
     //% mosi.defl=DigitalPin.P15
     //% miso.defl=DigitalPin.P14
     //% sck.defl=DigitalPin.P13
+    //% rotate.defl=false
     //% group="1. Setup"
-    export function setup(num: number, cs: DigitalPin, mosi: DigitalPin, miso: DigitalPin, sck: DigitalPin) {
+    export function setup(num: number, cs: DigitalPin, mosi: DigitalPin, miso: DigitalPin, sck: DigitalPin, rotate: boolean) {
         // set internal variables        
         _pinCS = cs
         _matrixNum = num
+        _isRotate = rotate
         // prepare display array (for displaying texts; add extra 8 columns at each side as buffers)
         for (let i = 0; i < (num + 2) * 8; i++) {
             _displayArray.push(0)
@@ -86,6 +89,42 @@ namespace MAX7219_Matrix {
     }
 
     /**
+    * (internal function) rotate matrix clockwise
+    */
+    function _rotateMatrix(matrix: number[][]): number[][] {
+        let tmp: number = 0
+        for (let i = 0; i < 4; i++) {
+            for (let j = i; j < 7 - i; j++) {
+                tmp = matrix[i][j];
+                matrix[i][j] = matrix[j][7 - i]
+                matrix[j][7 - i] = matrix[7 - i][7 - j]
+                matrix[7 - i][7 - j] = matrix[7 - j][i]
+                matrix[7 - j][i] = tmp
+            }
+        }
+        return matrix
+    }
+
+    /**
+    * (internal function) get 8x8 matrix from a column array
+    */
+    function _getMatrixFromColumns(columns: number[]): number[][] {
+        let matrix: number[][] = getEmptyMatrix()
+        let binaryStr: string = ""
+        for (let i = 0; i < 8; i++) {
+            for (let j = 7; j >= 0; j--) {
+                if (columns[i] >= 2 ** j) {
+                    columns[i] -= 2 ** j
+                    matrix[i][j] = 1
+                } else if (columns[i] == 0) {
+                    break
+                }
+            }
+        }
+        return matrix
+    }
+
+    /**
     * Scroll a text accross all MAX7219 matrixs for once
     */
     //% block="Scroll text $text|delay (ms) $delay|at the end wait (ms) $endDelay"
@@ -95,11 +134,11 @@ namespace MAX7219_Matrix {
     //% blockExternalInputs=true
     //% group="2. Display text on matrixs"
     export function scrollText(text: string, delay: number, endDelay: number) {
-        let printPosition = _displayArray.length - 8
+        let printPosition: number = _displayArray.length - 8
         let characters_index: number[] = []
-        let currentChrIndex = 0
+        let currentChrIndex: number = 0
         let currentFontArray: number[] = []
-        let nextChrCountdown = 1
+        let nextChrCountdown: number = 1
         let chrCountdown: number[] = []
         let totalScrollTime = 0
         // clear screen and array
@@ -109,7 +148,7 @@ namespace MAX7219_Matrix {
         clearAll()
         // get font index of every characters and total scroll time needed
         for (let i = 0; i < text.length; i++) {
-            let index = font.indexOf(text.substr(i, 1))
+            let index: number = font.indexOf(text.substr(i, 1))
             if (index >= 0) {
                 characters_index.push(index)
                 chrCountdown.push(font_matrix[index].length)
@@ -136,12 +175,22 @@ namespace MAX7219_Matrix {
             for (let j = 0; j < _displayArray.length - 1; j++) {
                 _displayArray[j] = _displayArray[j + 1]
             }
+            _displayArray[_displayArray.length - 1] = 0
             // write every 8 columns of display array (visible area) to each MAX7219s
-            let matrixCountdown = _matrixNum - 1
+            let matrixCountdown: number = _matrixNum - 1
             for (let j = 8; j < _displayArray.length - 8; j += 8) {
                 if (matrixCountdown < 0) break
-                for (let k = j; k < j + 8; k++) {
-                    _registerForOne(_DIGIT[k - j], _displayArray[k], matrixCountdown)
+                if (!_isRotate) {
+                    for (let k = j; k < j + 8; k++) {
+                        _registerForOne(_DIGIT[k - j], _displayArray[k], matrixCountdown)
+                    }
+                } else {
+                    let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
+                    let l: number = 0
+                    for (let k = j; k < j + 8; k++) {
+                        tmpColumns[l++] = _displayArray[k]
+                    }
+                    displayLEDsForOne(_rotateMatrix(_getMatrixFromColumns(tmpColumns)), matrixCountdown)
                 }
                 matrixCountdown -= 1
             }
@@ -169,10 +218,10 @@ namespace MAX7219_Matrix {
             }
             clearAll()
         }
-        let printPosition = Math.constrain(offset, -8, _displayArray.length - 9) + 8
-        let currentPosition = printPosition
+        let printPosition: number = Math.constrain(offset, -8, _displayArray.length - 9) + 8
+        let currentPosition: number = printPosition
         let characters_index: number[] = []
-        let currentChrIndex = 0
+        let currentChrIndex: number = 0
         let currentFontArray: number[] = []
         // get font index of every characters
         for (let i = 0; i < text.length; i++) {
@@ -193,11 +242,20 @@ namespace MAX7219_Matrix {
             if (currentChrIndex == characters_index.length) break
         }
         // write every 8 columns of display array (visible area) to each MAX7219s
-        let matrixCountdown = _matrixNum - 1
+        let matrixCountdown: number = _matrixNum - 1
         for (let i = 8; i < _displayArray.length - 8; i += 8) {
             if (matrixCountdown < 0) break
-            for (let j = i; j < i + 8; j++) {
-                _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
+            if (!_isRotate) {
+                for (let j = i; j < i + 8; j++) {
+                    _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
+                }
+            } else {
+                let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
+                let l: number = 0
+                for (let j = i; j < i + 8; j++) {
+                    tmpColumns[l++] = _displayArray[j]
+                }
+                displayLEDsForOne(_rotateMatrix(_getMatrixFromColumns(tmpColumns)), matrixCountdown)
             }
             matrixCountdown -= 1
         }
@@ -223,7 +281,7 @@ namespace MAX7219_Matrix {
             }
             clearAll()
         }
-        let printPosition = Math.constrain(offset, -8, _displayArray.length - 9) + 8
+        let printPosition: number = Math.constrain(offset, -8, _displayArray.length - 9) + 8
         if (customCharArray != null) {
             // print column data to display array
             for (let i = 0; i < customCharArray.length; i++) {
@@ -233,8 +291,17 @@ namespace MAX7219_Matrix {
             let matrixCountdown = _matrixNum - 1
             for (let i = 8; i < _displayArray.length - 8; i += 8) {
                 if (matrixCountdown < 0) break
-                for (let j = i; j < i + 8; j++) {
-                    _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
+                if (!_isRotate) {
+                    for (let j = i; j < i + 8; j++) {
+                        _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
+                    }
+                } else {
+                    let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
+                    let l: number = 0
+                    for (let j = i; j < i + 8; j++) {
+                        tmpColumns[l++] = _displayArray[j]
+                    }
+                    displayLEDsForOne(_rotateMatrix(_getMatrixFromColumns(tmpColumns)), matrixCountdown)
                 }
                 matrixCountdown -= 1
             }
@@ -243,20 +310,20 @@ namespace MAX7219_Matrix {
 
     /**
     * Return a number array calculated from a 8x8 LED byte array 
-    * (example: B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000)
+    * (example: B00100000,B01000000,B10000110,B10000000,B10000000,B10000110,B01000000,B00100000)
     */
     //% block="Get custom character number array|from byte-array string $text"
-    //% text.defl=""
+    //% text.defl="B00100000,B01000000,B10000110,B10000000,B10000000,B10000110,B01000000,B00100000"
     //% blockExternalInputs=true
     //% group="2. Display text on matrixs"
     //% advanced=true
     export function getCustomCharacterArray(text: string) {
         let tempTextArray: string[] = []
         let resultNumberArray: number[] = []
-        let currentIndex = 0
-        let currentChr = ""
-        let currentNum = 0
-        let columnNum = 0
+        let currentIndex: number = 0
+        let currentChr: string = ""
+        let currentNum: number = 0
+        let columnNum: number = 0
         if (text != null && text.length >= 0) {
             // seperate each byte number to a string
             while (currentIndex < text.length) {
@@ -309,7 +376,7 @@ namespace MAX7219_Matrix {
     //% group="2. Display text on matrixs"
     //% advanced=true
     export function fontDemo(delay: number) {
-        let offsetIndex = 0
+        let offsetIndex: number = 0
         clearAll()
         // print all characters on all matrixs
         for (let i = 1; i < font_matrix.length; i++) {
@@ -446,7 +513,7 @@ namespace MAX7219_Matrix {
     //% group="4. Set custom LED pattern on matrixs"
     //% advanced=true
     export function displayLEDsToAll(newMatrix: number[][]) {
-        let columnValue = 0
+        let columnValue: number = 0
         if (newMatrix != null) {
             for (let i = 0; i < 8; i++) {
                 if (newMatrix[i] != null) {
@@ -471,7 +538,7 @@ namespace MAX7219_Matrix {
     //% blockExternalInputs=true
     //% group="4. Set custom LED pattern on matrixs"
     export function displayLEDsForOne(newMatrix: number[][], index: number) {
-        let columnValue = 0
+        let columnValue: number = 0
         if (newMatrix != null) {
             for (let i = 0; i < 8; i++) {
                 if (newMatrix[i] != null) {
