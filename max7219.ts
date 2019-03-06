@@ -184,7 +184,7 @@ namespace MAX7219_Matrix {
                     for (let k = j; k < j + 8; k++) {
                         _registerForOne(_DIGIT[k - j], _displayArray[k], matrixCountdown)
                     }
-                } else {
+                } else { // rotate matrix if needed
                     let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
                     let l: number = 0
                     for (let k = j; k < j + 8; k++) {
@@ -249,7 +249,7 @@ namespace MAX7219_Matrix {
                 for (let j = i; j < i + 8; j++) {
                     _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
                 }
-            } else {
+            } else { // rotate matrix if needed
                 let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
                 let l: number = 0
                 for (let j = i; j < i + 8; j++) {
@@ -295,7 +295,7 @@ namespace MAX7219_Matrix {
                     for (let j = i; j < i + 8; j++) {
                         _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
                     }
-                } else {
+                } else { // rotate matrix if needed
                     let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
                     let l: number = 0
                     for (let j = i; j < i + 8; j++) {
@@ -515,6 +515,7 @@ namespace MAX7219_Matrix {
     export function displayLEDsToAll(newMatrix: number[][]) {
         let columnValue: number = 0
         if (newMatrix != null) {
+            if (_isRotate) newMatrix = _rotateMatrix(newMatrix) // rotate matrix if needed
             for (let i = 0; i < 8; i++) {
                 if (newMatrix[i] != null) {
                     columnValue = 0
@@ -540,6 +541,7 @@ namespace MAX7219_Matrix {
     export function displayLEDsForOne(newMatrix: number[][], index: number) {
         let columnValue: number = 0
         if (newMatrix != null) {
+            if (_isRotate) newMatrix = _rotateMatrix(newMatrix) // rotate matrix if needed
             for (let i = 0; i < 8; i++) {
                 if (newMatrix[i] != null) {
                     columnValue = 0
