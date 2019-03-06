@@ -42,7 +42,7 @@ If you are using 32x8 MAX7219 module like below, you only need to connect the he
 
 ![max7219-dot - main-500x500](https://user-images.githubusercontent.com/44191076/53904356-d2e93080-4080-11e9-96bd-c1c3e5111a4b.jpg)
 
-However, each matrix in the chain are arranged in different directions, which require display rotation. Switch the "Rotate clockwise" option to true, and all the stuff displayed on LEDs would turn 90 degrees clockwise.
+However, each matrix in the chain are arranged in different directions, which require display rotation. Switch the "Display rotate " option to true, and all the stuff displayed on LEDs would turn 90 degrees counter-clockwise.
 
 ![1](https://user-images.githubusercontent.com/44191076/53906195-3ecd9800-4085-11e9-9992-a803f705ff79.jpg)
 
