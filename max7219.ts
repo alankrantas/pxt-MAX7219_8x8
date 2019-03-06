@@ -22,7 +22,7 @@ namespace MAX7219_Matrix {
     /**
     * Setup/reset MAX7219s
     */
-    //% block="Setup MAX7219:|Number of matrixs $num|CS(LOAD) = $cs|MOSI(DIN) = $mosi|MISO(not used) = $miso|SCK(CLK) = $sck|Rotate clockwise $rotate"
+    //% block="Setup MAX7219:|Number of matrixs $num|CS(LOAD) = $cs|MOSI(DIN) = $mosi|MISO(not used) = $miso|SCK(CLK) = $sck|Display rotate $rotate"
     //% num.min=1 num.defl=1
     //% cs.defl=DigitalPin.P16
     //% mosi.defl=DigitalPin.P15
@@ -89,17 +89,17 @@ namespace MAX7219_Matrix {
     }
 
     /**
-    * (internal function) rotate matrix clockwise
+    * (internal function) rotate matrix counter-clockwise
     */
     function _rotateMatrix(matrix: number[][]): number[][] {
         let tmp: number = 0
         for (let i = 0; i < 4; i++) {
             for (let j = i; j < 7 - i; j++) {
                 tmp = matrix[i][j];
-                matrix[i][j] = matrix[j][7 - i]
-                matrix[j][7 - i] = matrix[7 - i][7 - j]
-                matrix[7 - i][7 - j] = matrix[7 - j][i]
-                matrix[7 - j][i] = tmp
+                matrix[i][j] = matrix[7 - j][i]
+                matrix[7 - j][i] = matrix[7 - i][7 - j]
+                matrix[7 - i][7 - j] = matrix[j][7 - i]
+                matrix[j][7 - i] = tmp
             }
         }
         return matrix
@@ -190,7 +190,7 @@ namespace MAX7219_Matrix {
                     for (let k = j; k < j + 8; k++) {
                         tmpColumns[l++] = _displayArray[k]
                     }
-                    displayLEDsForOne(_rotateMatrix(_getMatrixFromColumns(tmpColumns)), matrixCountdown)
+                    displayLEDsForOne(_getMatrixFromColumns(tmpColumns), matrixCountdown)
                 }
                 matrixCountdown -= 1
             }
@@ -255,7 +255,7 @@ namespace MAX7219_Matrix {
                 for (let j = i; j < i + 8; j++) {
                     tmpColumns[l++] = _displayArray[j]
                 }
-                displayLEDsForOne(_rotateMatrix(_getMatrixFromColumns(tmpColumns)), matrixCountdown)
+                displayLEDsForOne(_getMatrixFromColumns(tmpColumns), matrixCountdown)
             }
             matrixCountdown -= 1
         }
@@ -301,7 +301,7 @@ namespace MAX7219_Matrix {
                     for (let j = i; j < i + 8; j++) {
                         tmpColumns[l++] = _displayArray[j]
                     }
-                    displayLEDsForOne(_rotateMatrix(_getMatrixFromColumns(tmpColumns)), matrixCountdown)
+                    displayLEDsForOne(_getMatrixFromColumns(tmpColumns), matrixCountdown)
                 }
                 matrixCountdown -= 1
             }
