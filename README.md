@@ -44,7 +44,7 @@ The 4-in-1 MAX7219 module are consisted of 4 matrixs, and they are wired in a di
 
 In order to use this, switch the "Rotate for 4-in-1 module" option as true. 
 
-![1](https://user-images.githubusercontent.com/44191076/53906195-3ecd9800-4085-11e9-9992-a803f705ff79.jpg)
+![1](https://user-images.githubusercontent.com/44191076/54068135-0ea01800-4284-11e9-8bfb-59d6402d8f69.jpg)
 
 The extra process slows down the text scrolling/refreshing speed. You can try to reduce the scrolling delay time to 0.
 
