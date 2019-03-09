@@ -20,9 +20,11 @@ namespace MAX7219_Matrix {
     let _isRotate: boolean = false // rotate display clockwise (for head-to-head linked modules)
 
     /**
-    * Setup/reset MAX7219s
+    * Setup/reset MAX7219s.
+    * If you are using 4-in-1 module you'll need to set rotation as true.
+    * If your chain are consisted of single modules set it as false (default).
     */
-    //% block="Setup MAX7219:|Number of matrixs $num|CS(LOAD) = $cs|MOSI(DIN) = $mosi|MISO(not used) = $miso|SCK(CLK) = $sck|Display rotate $rotate"
+    //% block="Setup MAX7219:|Number of matrixs $num|CS(LOAD) = $cs|MOSI(DIN) = $mosi|MISO(not used) = $miso|SCK(CLK) = $sck|Rotate for 4-in-1 module $rotate"
     //% num.min=1 num.defl=1
     //% cs.defl=DigitalPin.P16
     //% mosi.defl=DigitalPin.P15
@@ -96,10 +98,10 @@ namespace MAX7219_Matrix {
         for (let i = 0; i < 4; i++) {
             for (let j = i; j < 7 - i; j++) {
                 tmp = matrix[i][j];
-                matrix[i][j] = matrix[7 - j][i]
-                matrix[7 - j][i] = matrix[7 - i][7 - j]
-                matrix[7 - i][7 - j] = matrix[j][7 - i]
-                matrix[j][7 - i] = tmp
+                matrix[i][j] = matrix[j][7 - i]
+                matrix[j][7 - i] = matrix[7 - i][7 - j]
+                matrix[7 - i][7 - j] = matrix[7 - j][i]
+                matrix[7 - j][i] = tmp
             }
         }
         return matrix
