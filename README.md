@@ -36,17 +36,17 @@ Be noted that in the wiring picture above the order of the pins are slightly dif
 
 In my test the 3.3V power from micro:bit itself (90mA) is sufficient to power 4 chained MAX7219 modules. You may need more for a longer matrix chain.
 
-## Matrix Rotation For 32x8 MAX7219 Modules (v0.0.2)
+## Matrix Rotation For 4-in-1 MAX7219 Modules (v0.0.2)
 
-If you are using 32x8 MAX7219 module like below, you only need to connect the head pin to micro:bit.
+The 4-in-1 MAX7219 module are consisted of 4 matrixs, and they are wired in a different direction and order.
 
 ![max7219-dot - main-500x500](https://user-images.githubusercontent.com/44191076/53904356-d2e93080-4080-11e9-96bd-c1c3e5111a4b.jpg)
 
-However, each matrix in the chain are arranged in different directions, which require display rotation. Switch the "Display rotate " option to true, and all the stuff displayed on LEDs would turn 90 degrees counter-clockwise.
+In order to use this, switch the "Rotate for 4-in-1 module" option as true. 
 
 ![1](https://user-images.githubusercontent.com/44191076/53906195-3ecd9800-4085-11e9-9992-a803f705ff79.jpg)
 
-Be noted that the extra process slows down the text scrolling/refreshing speed. You can try to reduce the scrolling delay time.
+The extra process slows down the text scrolling/refreshing speed. You can try to reduce the scrolling delay time to 0.
 
 ## Index of Modules
 
