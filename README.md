@@ -36,29 +36,31 @@ Be noted that in the wiring picture above the order of the pins are slightly dif
 
 In my test the 3.3V power from micro:bit itself (90mA) is sufficient to power 4 chained MAX7219 modules. You may need more for a longer matrix chain.
 
-## Matrix Rotation For 4-in-1 MAX7219 Modules (v0.0.2)
+## Matrix Rotation For 4-in-1 MAX7219 Modules (v0.0.2 experimental feature)
 
-The 4-in-1 MAX7219 module are consisted of 4 matrixs, and they are wired in a different direction and order.
+The 4-in-1 MAX7219 module are consisted of 4 matrixs, and they are wired in a different direction. In order to use this, switch the "Rotate for 4-in-1 module" option as true. 
 
 ![max7219-dot - main-500x500](https://user-images.githubusercontent.com/44191076/53904356-d2e93080-4080-11e9-96bd-c1c3e5111a4b.jpg)
-
-In order to use this, switch the "Rotate for 4-in-1 module" option as true. 
 
 ![1](https://user-images.githubusercontent.com/44191076/54068135-0ea01800-4284-11e9-8bfb-59d6402d8f69.jpg)
 
 The extra process slows down the text scrolling/refreshing speed. You can try to reduce the scrolling delay time to 0.
 
+Note: since I don't have these modules, I cannot be sure if this feature works correctly on general 4-in-1 models. However this feature does not effect the original scrolling/printing functions.
+
 ## Index of Modules
 
-This extension assumes that you arrange MAX7219 modules in a "chain", that they linked into a larger horizonal LED display.
+This extension assumes that you arrange single MAX7219 modules as a "chain", that they linked into a larger horizonal LED display.
 
 The one nearest to micro:bit on the left has the highest index number (total number - 1), and the furthest one (far right) has index of 0. Index is useful if you want to print something to a specific module.
 
 ![img_0004](https://user-images.githubusercontent.com/44191076/50699988-5e941000-1084-11e9-841e-5ff173872540.JPG)
 
+For 4-in-1 modules index 0 is seems to be the closest to micro:bit, index total number - 1 is the furthest.
+
 ## Text Scrolling
 
-There are currently two built-in display modes. First is the simple text printing mode; it will use the whole LED display to show or scroll a string.
+There are currently two built-in display modes; first is the simple text printing mode, which use the whole LED display to show or scroll a string.
 
 ![microbit-screenshot](https://user-images.githubusercontent.com/44191076/50701355-84bbaf00-1088-11e9-9744-1df09ab2f2cd.png)
 
@@ -92,7 +94,7 @@ Due to the nature of the control method of MAX7219s, it is actually harder to to
 
 ![microbit-screenshot 2](https://user-images.githubusercontent.com/44191076/50701394-9f8e2380-1088-11e9-9d71-376778ea8d74.png)
 
-It would be easier if you modify the 8x8 array variable in JavaScript mode.
+It would also be easier if you modify the 8x8 array variable in JavaScript mode.
 
 ## License
 
