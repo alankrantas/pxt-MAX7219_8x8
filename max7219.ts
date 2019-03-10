@@ -91,7 +91,7 @@ namespace MAX7219_Matrix {
     }
 
     /**
-    * (internal function) rotate matrix counter-clockwise
+    * (internal function) rotate matrix clockwise
     */
     function _rotateMatrix(matrix: number[][]): number[][] {
         let tmp: number = 0
