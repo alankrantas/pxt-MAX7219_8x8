@@ -192,7 +192,7 @@ namespace MAX7219_Matrix {
                     for (let k = j; k < j + 8; k++) {
                         tmpColumns[l++] = _displayArray[k]
                     }
-                    displayLEDsForOne(_getMatrixFromColumns(tmpColumns), matrixCountdown)
+                    displayLEDsForOne(_getMatrixFromColumns(tmpColumns), _matrixNum - 1 - matrixCountdown)
                 }
                 matrixCountdown -= 1
             }
@@ -251,13 +251,13 @@ namespace MAX7219_Matrix {
                 for (let j = i; j < i + 8; j++) {
                     _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
                 }
-            } else { // rotate matrix if needed
+            } else { // rotate matrix and reverse order if needed
                 let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
                 let l: number = 0
                 for (let j = i; j < i + 8; j++) {
                     tmpColumns[l++] = _displayArray[j]
                 }
-                displayLEDsForOne(_getMatrixFromColumns(tmpColumns), matrixCountdown)
+                displayLEDsForOne(_getMatrixFromColumns(tmpColumns), _matrixNum - 1 - matrixCountdown)
             }
             matrixCountdown -= 1
         }
@@ -297,13 +297,13 @@ namespace MAX7219_Matrix {
                     for (let j = i; j < i + 8; j++) {
                         _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
                     }
-                } else { // rotate matrix if needed
+                } else { // rotate matrix and reverse order if needed
                     let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
                     let l: number = 0
                     for (let j = i; j < i + 8; j++) {
                         tmpColumns[l++] = _displayArray[j]
                     }
-                    displayLEDsForOne(_getMatrixFromColumns(tmpColumns), matrixCountdown)
+                    displayLEDsForOne(_getMatrixFromColumns(tmpColumns), _matrixNum - 1 - matrixCountdown)
                 }
                 matrixCountdown -= 1
             }
