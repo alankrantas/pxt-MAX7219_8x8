@@ -36,9 +36,9 @@ Be noted that in the wiring picture above the order of the pins are slightly dif
 
 In my test the 3.3V power from micro:bit itself (90mA) is sufficient to power 4 chained MAX7219 modules. You may need more for a longer matrix chain.
 
-## Matrix Rotation For 4-in-1 MAX7219 Modules (v0.0.2 experimental feature)
+## Matrix Rotation For 4-in-1 MAX7219 Modules (v0.0.2)
 
-The 4-in-1 MAX7219 module are consisted of 4 matrixs, and they are wired in a different direction. In order to use this, switch the "Rotate for 4-in-1 module" option as true. 
+The 4-in-1 MAX7219 module are consisted of 4 matrixs, and they are wired in a different direction and order. To use this, switch the "Rotate for 4-in-1 module" option as true. 
 
 ![max7219-dot - main-500x500](https://user-images.githubusercontent.com/44191076/53904356-d2e93080-4080-11e9-96bd-c1c3e5111a4b.jpg)
 
@@ -52,11 +52,11 @@ Note: since I don't have these modules, I cannot be sure if this feature works c
 
 This extension assumes that you arrange single MAX7219 modules as a "chain", that they linked into a larger horizonal LED display.
 
-The one nearest to micro:bit on the left has the highest index number (total number - 1), and the furthest one (far right) has index of 0. Index is useful if you want to print something to a specific module.
+If you are using seperated matrix modules, the one nearest to micro:bit on the left has the highest index number (total number - 1), and the furthest one (far right) has index of 0. Index is useful if you want to print something to a specific module.
 
 ![img_0004](https://user-images.githubusercontent.com/44191076/50699988-5e941000-1084-11e9-841e-5ff173872540.JPG)
 
-For 4-in-1 modules index 0 is seems to be the closest to micro:bit, index total number - 1 is the furthest.
+For 4-in-1 modules index 0 seems to be the closest one to micro:bit, index total number - 1 is the furthest. When "Rotate for 4-in-1 module" option set as true, the printing order in text scrolling/printing would be automatically reversed.
 
 ## Text Scrolling
 
