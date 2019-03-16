@@ -17,14 +17,15 @@ namespace MAX7219_Matrix {
     let _pinCS: DigitalPin = DigitalPin.P16 // LOAD pin, 0=ready to receive command, 1=command take effect
     let _matrixNum: number = 1 // number of MAX7219 matrix linked in the chain
     let _displayArray: number[] = [] // display array to show accross all matrixs
-    let _isRotate: boolean = false // rotate display clockwise (for head-to-head linked modules)
+    let _rotation: number = 0 // rotate matrixs display for 4-in-1 modules
+    let _reversed: boolean = false // reverse matrixs display order for 4-in-1 modules
 
     /**
     * Setup/reset MAX7219s.
     * If you are using 4-in-1 module you'll need to set rotation as true.
     * If your chain are consisted of single modules set it as false (default).
     */
-    //% block="Setup MAX7219:|Number of matrixs $num|CS(LOAD) = $cs|MOSI(DIN) = $mosi|MISO(not used) = $miso|SCK(CLK) = $sck|Rotate for 4-in-1 module $rotate"
+    //% block="Setup MAX7219:|Number of matrixs $num|CS(LOAD) = $cs|MOSI(DIN) = $mosi|MISO(not used) = $miso|SCK(CLK) = $sck"
     //% num.min=1 num.defl=1
     //% cs.defl=DigitalPin.P16
     //% mosi.defl=DigitalPin.P15
@@ -32,15 +33,12 @@ namespace MAX7219_Matrix {
     //% sck.defl=DigitalPin.P13
     //% rotate.defl=false
     //% group="1. Setup"
-    export function setup(num: number, cs: DigitalPin, mosi: DigitalPin, miso: DigitalPin, sck: DigitalPin, rotate: boolean) {
+    export function setup(num: number, cs: DigitalPin, mosi: DigitalPin, miso: DigitalPin, sck: DigitalPin) {
         // set internal variables        
         _pinCS = cs
         _matrixNum = num
-        _isRotate = rotate
         // prepare display array (for displaying texts; add extra 8 columns at each side as buffers)
-        for (let i = 0; i < (num + 2) * 8; i++) {
-            _displayArray.push(0)
-        }
+        for (let i = 0; i < (num + 2) * 8; i++)  _displayArray.push(0)
         // set micro:bit SPI
         pins.spiPins(mosi, miso, sck)
         pins.spiFormat(8, 3)
@@ -53,6 +51,19 @@ namespace MAX7219_Matrix {
         _registerAll(_INTENSITY, 15) // set brightness to 15
         _registerAll(_SHUTDOWN, 1) // turn on
         clearAll() // clear screen on all MAX7219s
+    }
+
+    /**
+    * Rotation/reverse order options for 4-in-1 MAX7219 modules
+    */
+    //% block="Rotate matrix display $rotation|Reverse printing order $reversed"
+    //% group="1. Setup"
+    //% rotation.defl=rotation_direction.none
+    //% blockExternalInputs=true
+    //% advanced=true
+    export function for_4_in_1_modules(rotation: rotation_direction, reversed: boolean) {
+        _rotation = rotation
+        _reversed = reversed
     }
 
     /**
@@ -91,17 +102,32 @@ namespace MAX7219_Matrix {
     }
 
     /**
-    * (internal function) rotate matrix clockwise
+    * (internal function) rotate matrix
     */
     function _rotateMatrix(matrix: number[][]): number[][] {
         let tmp: number = 0
         for (let i = 0; i < 4; i++) {
             for (let j = i; j < 7 - i; j++) {
-                tmp = matrix[i][j];
-                matrix[i][j] = matrix[j][7 - i]
-                matrix[j][7 - i] = matrix[7 - i][7 - j]
-                matrix[7 - i][7 - j] = matrix[7 - j][i]
-                matrix[7 - j][i] = tmp
+                if (_rotation == rotation_direction.clockwise) { // clockwise
+                    tmp = matrix[i][j]
+                    matrix[i][j] = matrix[j][7 - i]
+                    matrix[j][7 - i] = matrix[7 - i][7 - j]
+                    matrix[7 - i][7 - j] = matrix[7 - j][i]
+                    matrix[7 - j][i] = tmp
+                } else if (_rotation == rotation_direction.counterclockwise) { // counter-clockwise
+                    tmp = matrix[i][j]
+                    matrix[i][j] = matrix[7 - j][i]
+                    matrix[7 - j][i] = matrix[7 - i][7 - j]
+                    matrix[7 - i][7 - j] = matrix[j][7 - i]
+                    matrix[j][7 - i] = tmp
+                } else if (_rotation == rotation_direction.one_eighty_degree) { // 180 degree
+                    tmp = matrix[i][j]
+                    matrix[i][j] = matrix[7 - i][7 - j]
+                    matrix[7 - i][7 - j] = tmp
+                    tmp = matrix[7 - j][i]
+                    matrix[7 - j][i] = matrix[j][7 - i]
+                    matrix[j][7 - i] = tmp
+                }
             }
         }
         return matrix
@@ -112,7 +138,6 @@ namespace MAX7219_Matrix {
     */
     function _getMatrixFromColumns(columns: number[]): number[][] {
         let matrix: number[][] = getEmptyMatrix()
-        let binaryStr: string = ""
         for (let i = 0; i < 8; i++) {
             for (let j = 7; j >= 0; j--) {
                 if (columns[i] >= 2 ** j) {
@@ -144,9 +169,7 @@ namespace MAX7219_Matrix {
         let chrCountdown: number[] = []
         let totalScrollTime = 0
         // clear screen and array
-        for (let i = 0; i < _displayArray.length; i++) {
-            _displayArray[i] = 0
-        }
+        for (let i = 0; i < _displayArray.length; i++) _displayArray[i] = 0
         clearAll()
         // get font index of every characters and total scroll time needed
         for (let i = 0; i < text.length; i++) {
@@ -180,11 +203,17 @@ namespace MAX7219_Matrix {
             _displayArray[_displayArray.length - 1] = 0
             // write every 8 columns of display array (visible area) to each MAX7219s
             let matrixCountdown: number = _matrixNum - 1
+            let actualMatrixIndex: number = 0
             for (let j = 8; j < _displayArray.length - 8; j += 8) {
                 if (matrixCountdown < 0) break
-                if (!_isRotate) {
+                if (!_reversed) {
+                    actualMatrixIndex = matrixCountdown
+                } else {
+                    actualMatrixIndex = _matrixNum - 1 - matrixCountdown
+                }
+                if (_rotation == rotation_direction.none) {
                     for (let k = j; k < j + 8; k++) {
-                        _registerForOne(_DIGIT[k - j], _displayArray[k], matrixCountdown)
+                        _registerForOne(_DIGIT[k - j], _displayArray[k], actualMatrixIndex)
                     }
                 } else { // rotate matrix if needed
                     let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -192,9 +221,9 @@ namespace MAX7219_Matrix {
                     for (let k = j; k < j + 8; k++) {
                         tmpColumns[l++] = _displayArray[k]
                     }
-                    displayLEDsForOne(_getMatrixFromColumns(tmpColumns), _matrixNum - 1 - matrixCountdown)
+                    displayLEDsForOne(_getMatrixFromColumns(tmpColumns), actualMatrixIndex)
                 }
-                matrixCountdown -= 1
+                matrixCountdown--
             }
             basic.pause(delay)
         }
@@ -215,9 +244,7 @@ namespace MAX7219_Matrix {
     export function displayText(text: string, offset: number, clear: boolean) {
         // clear screen and array if needed
         if (clear) {
-            for (let i = 0; i < _displayArray.length; i++) {
-                _displayArray[i] = 0
-            }
+            for (let i = 0; i < _displayArray.length; i++) _displayArray[i] = 0
             clearAll()
         }
         let printPosition: number = Math.constrain(offset, -8, _displayArray.length - 9) + 8
@@ -245,11 +272,17 @@ namespace MAX7219_Matrix {
         }
         // write every 8 columns of display array (visible area) to each MAX7219s
         let matrixCountdown: number = _matrixNum - 1
+        let actualMatrixIndex: number = 0
         for (let i = 8; i < _displayArray.length - 8; i += 8) {
             if (matrixCountdown < 0) break
-            if (!_isRotate) {
+            if (!_reversed) {
+                actualMatrixIndex = matrixCountdown
+            } else {
+                actualMatrixIndex = _matrixNum - 1 - matrixCountdown
+            }
+            if (_rotation == rotation_direction.none) {
                 for (let j = i; j < i + 8; j++) {
-                    _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
+                    _registerForOne(_DIGIT[j - i], _displayArray[j], actualMatrixIndex)
                 }
             } else { // rotate matrix and reverse order if needed
                 let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -257,9 +290,9 @@ namespace MAX7219_Matrix {
                 for (let j = i; j < i + 8; j++) {
                     tmpColumns[l++] = _displayArray[j]
                 }
-                displayLEDsForOne(_getMatrixFromColumns(tmpColumns), _matrixNum - 1 - matrixCountdown)
+                displayLEDsForOne(_getMatrixFromColumns(tmpColumns), actualMatrixIndex)
             }
-            matrixCountdown -= 1
+            matrixCountdown--
         }
     }
 
@@ -278,9 +311,7 @@ namespace MAX7219_Matrix {
     export function displayCustomCharacter(customCharArray: number[], offset: number, clear: boolean) {
         // clear screen and array if needed
         if (clear) {
-            for (let i = 0; i < _displayArray.length; i++) {
-                _displayArray[i] = 0
-            }
+            for (let i = 0; i < _displayArray.length; i++) _displayArray[i] = 0
             clearAll()
         }
         let printPosition: number = Math.constrain(offset, -8, _displayArray.length - 9) + 8
@@ -291,11 +322,17 @@ namespace MAX7219_Matrix {
             }
             // write every 8 columns of display array (visible area) to each MAX7219s
             let matrixCountdown = _matrixNum - 1
+            let actualMatrixIndex: number = 0
             for (let i = 8; i < _displayArray.length - 8; i += 8) {
                 if (matrixCountdown < 0) break
-                if (!_isRotate) {
+                if (!_reversed) {
+                    actualMatrixIndex = matrixCountdown
+                } else {
+                    actualMatrixIndex = _matrixNum - 1 - matrixCountdown
+                }
+                if (_rotation == rotation_direction.none) {
                     for (let j = i; j < i + 8; j++) {
-                        _registerForOne(_DIGIT[j - i], _displayArray[j], matrixCountdown)
+                        _registerForOne(_DIGIT[j - i], _displayArray[j], actualMatrixIndex)
                     }
                 } else { // rotate matrix and reverse order if needed
                     let tmpColumns: number[] = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -303,9 +340,9 @@ namespace MAX7219_Matrix {
                     for (let j = i; j < i + 8; j++) {
                         tmpColumns[l++] = _displayArray[j]
                     }
-                    displayLEDsForOne(_getMatrixFromColumns(tmpColumns), _matrixNum - 1 - matrixCountdown)
+                    displayLEDsForOne(_getMatrixFromColumns(tmpColumns), actualMatrixIndex)
                 }
-                matrixCountdown -= 1
+                matrixCountdown--
             }
         }
     }
@@ -517,7 +554,7 @@ namespace MAX7219_Matrix {
     export function displayLEDsToAll(newMatrix: number[][]) {
         let columnValue: number = 0
         if (newMatrix != null) {
-            if (_isRotate) newMatrix = _rotateMatrix(newMatrix) // rotate matrix if needed
+            if (_rotation != rotation_direction.none) newMatrix = _rotateMatrix(newMatrix) // rotate matrix if needed
             for (let i = 0; i < 8; i++) {
                 if (newMatrix[i] != null) {
                     columnValue = 0
@@ -543,7 +580,7 @@ namespace MAX7219_Matrix {
     export function displayLEDsForOne(newMatrix: number[][], index: number) {
         let columnValue: number = 0
         if (newMatrix != null) {
-            if (_isRotate) newMatrix = _rotateMatrix(newMatrix) // rotate matrix if needed
+            if (_rotation != rotation_direction.none) newMatrix = _rotateMatrix(newMatrix) // rotate matrix if needed
             for (let i = 0; i < 8; i++) {
                 if (newMatrix[i] != null) {
                     columnValue = 0
@@ -1106,4 +1143,15 @@ namespace MAX7219_Matrix {
             0b00000010,
             0b00000000]]
 
+}
+
+enum rotation_direction {
+    //% block="none"
+    none = 0,
+    //% block="clockwise"
+    clockwise = 1,
+    //% block="counter-clockwise"
+    counterclockwise = 2,
+    //% block="180-degree"
+    one_eighty_degree = 3,
 }
