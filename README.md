@@ -36,18 +36,6 @@ Be noted that in the wiring picture above the order of the pins are slightly dif
 
 In my test the 3.3V power from micro:bit itself (90mA) is sufficient to power 4 chained MAX7219 modules. You may need more for a longer matrix chain.
 
-## Matrix Rotation For 4-in-1 MAX7219 Modules (v0.0.2)
-
-The 4-in-1 MAX7219 module are consisted of 4 matrixs, and they are wired in a different direction and order. To use this, switch the "Rotate for 4-in-1 module" option as true. 
-
-![max7219-dot - main-500x500](https://user-images.githubusercontent.com/44191076/53904356-d2e93080-4080-11e9-96bd-c1c3e5111a4b.jpg)
-
-![1](https://user-images.githubusercontent.com/44191076/54068135-0ea01800-4284-11e9-8bfb-59d6402d8f69.jpg)
-
-The extra process slows down the text scrolling/refreshing speed. You can try to reduce the scrolling delay time to 0.
-
-Note: since I don't have these modules, I cannot be sure if this feature works correctly on general 4-in-1 models. However this feature does not effect the original scrolling/printing functions.
-
 ## Index of Modules
 
 This extension assumes that you arrange single MAX7219 modules as a "chain", that they linked into a larger horizonal LED display.
@@ -56,7 +44,17 @@ If you are using seperated matrix modules, the one nearest to micro:bit on the l
 
 ![img_0004](https://user-images.githubusercontent.com/44191076/50699988-5e941000-1084-11e9-841e-5ff173872540.JPG)
 
-For 4-in-1 modules index 0 seems to be the closest one to micro:bit, index total number - 1 is the furthest. When "Rotate for 4-in-1 module" option set as true, the printing order in text scrolling/printing would be automatically reversed.
+## Matrix Rotation/Reverse Printing Order
+
+Some people use the 4-in-1 MAX7219 modules, which are 4 matrixs already linked together. They may be wired in different directions and/or order.
+
+![max7219-dot - main-500x500](https://user-images.githubusercontent.com/44191076/53904356-d2e93080-4080-11e9-96bd-c1c3e5111a4b.jpg)
+
+You can choose to rotate and reverse the display by using the following block in the advanced section:
+
+![1](https://user-images.githubusercontent.com/44191076/54478164-47268f80-484a-11e9-98de-76c1406e43e3.jpg)
+
+Be warned that the extra rotation/reverse process slow down the text scrolling/refreshing speed. You can reduce the scrolling delay time to 0.
 
 ## Text Scrolling
 
