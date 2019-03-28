@@ -62,6 +62,23 @@ There are currently two built-in display modes; first is the simple text printin
 
 ![microbit-screenshot](https://user-images.githubusercontent.com/44191076/50701355-84bbaf00-1088-11e9-9744-1df09ab2f2cd.png)
 
+```
+MAX7219_Matrix.setup(
+4,
+DigitalPin.P16,
+DigitalPin.P15,
+DigitalPin.P14,
+DigitalPin.P13
+)
+basic.forever(function () {
+    MAX7219_Matrix.scrollText(
+    "Hello world!",
+    75,
+    500
+    )
+})
+```
+
 ![img_0002](https://user-images.githubusercontent.com/44191076/50700052-88e5cd80-1084-11e9-843f-2fa339c39b6f.JPG)
 
 The scrolling text block shows the whole sentence by scrolling it from right to left, speed is adjustable. However, the program will not contiune to do anything until scrolling is finished.
@@ -78,6 +95,25 @@ You can also print a custom character or image on the LED display. Use [this 8x8
 
 ![microbit-screenshot 3](https://user-images.githubusercontent.com/44191076/50702213-31972b80-108b-11e9-928e-9e4a991c5dbb.png)
 
+```
+let ChstomChr: number[] = []
+MAX7219_Matrix.setup(
+4,
+DigitalPin.P16,
+DigitalPin.P15,
+DigitalPin.P14,
+DigitalPin.P13
+)
+ChstomChr = MAX7219_Matrix.getCustomCharacterArray(
+"B00100000,B01000000,B10000110,B10000000,B10000000,B10000110,B01000000,B00100000"
+)
+MAX7219_Matrix.displayCustomCharacter(
+ChstomChr,
+0,
+true
+)
+```
+
 ![img_0001](https://user-images.githubusercontent.com/44191076/50700621-ff36ff80-1085-11e9-942d-0ef1c3cef84f.JPG)
 
 So far the extension only contains a simple ASCII character library. If you input a character that's not in the library, it will not be displayed (skipped) anyway. However, you can add custom character or images into the library by using some unusual [Unicode characters](https://en.wikipedia.org/wiki/List_of_Unicode_characters) as index/tokens.
@@ -91,6 +127,30 @@ The second mode allows you to get/modify a 8x8 number array variable and use it 
 Due to the nature of the control method of MAX7219s, it is actually harder to toggle a single LED on the 8x8 matrix. (They set one whole column at a time.) So is this mode you'll have to keep track the status of all LEDs by youself. The example below will show a anti-slash line on module 1 (second from the right).
 
 ![microbit-screenshot 2](https://user-images.githubusercontent.com/44191076/50701394-9f8e2380-1088-11e9-9d71-376778ea8d74.png)
+
+```
+let matrix: number[][] = []
+MAX7219_Matrix.setup(
+4,
+DigitalPin.P16,
+DigitalPin.P15,
+DigitalPin.P14,
+DigitalPin.P13
+)
+matrix = MAX7219_Matrix.getEmptyMatrix()
+for (let index = 0; index <= 4; index++) {
+    MAX7219_Matrix.setValueInMatrix(
+    matrix,
+    index,
+    index,
+    1
+    )
+}
+MAX7219_Matrix.displayLEDsForOne(
+matrix,
+1
+)
+```
 
 It would also be easier if you modify the 8x8 array variable in JavaScript mode.
 
