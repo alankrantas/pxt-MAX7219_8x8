@@ -3,7 +3,7 @@
  * by Alan Wang
  */
 //% weight=100 color=#006d19 icon="\uf00a" block="MAX7219 8x8"
-namespace MAX7219_Matrix {
+namespace max7219_matrix {
 
     //Registers (command) for MAX7219
     const _NOOP: number = 0 // no-op (do nothing, doesn't change current status)
