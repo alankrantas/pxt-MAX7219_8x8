@@ -62,7 +62,7 @@ There are currently two built-in display modes; first is the simple text printin
 
 ![microbit-screenshot](https://user-images.githubusercontent.com/44191076/50701355-84bbaf00-1088-11e9-9744-1df09ab2f2cd.png)
 
-```
+```blocks
 MAX7219_Matrix.setup(
 4,
 DigitalPin.P16,
@@ -95,7 +95,7 @@ You can also print a custom character or image on the LED display. Use [this 8x8
 
 ![microbit-screenshot 3](https://user-images.githubusercontent.com/44191076/50702213-31972b80-108b-11e9-928e-9e4a991c5dbb.png)
 
-```
+```blocks
 let ChstomChr: number[] = []
 MAX7219_Matrix.setup(
 4,
@@ -128,7 +128,7 @@ Due to the nature of the control method of MAX7219s, it is actually harder to to
 
 ![microbit-screenshot 2](https://user-images.githubusercontent.com/44191076/50701394-9f8e2380-1088-11e9-9d71-376778ea8d74.png)
 
-```
+```blocks
 let matrix: number[][] = []
 MAX7219_Matrix.setup(
 4,
