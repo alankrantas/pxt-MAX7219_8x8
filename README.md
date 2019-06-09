@@ -154,6 +154,10 @@ matrix,
 
 It would also be easier if you modify the 8x8 array variable in JavaScript mode.
 
+## Known Issue Combining With Bluetooth Extension
+
+If you use Bluetooth extension along with this extension, you would get error code 20 (out of memory) on your micro:bit. It's probably because both extension use a lot of memory and there's not enough to run both.
+
 ## License
 
 MIT
