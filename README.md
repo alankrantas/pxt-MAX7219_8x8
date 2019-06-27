@@ -2,7 +2,7 @@
 
 This extension works with single or multiple MAX7219 8x8 LED matrix display modules.
 
-Add this extension by go to Advanced -> +extension and copy/paste [https://github.com/alankrantas/pxt-MAX7219_8x8](https://github.com/alankrantas/pxt-MAX7219_8x8) into the search box. Press enter and click the extension to download it.
+To import this extension, go to Advanced -> +extension and enter "MAX7219" in the search box, or copy/paste [https://github.com/alankrantas/pxt-MAX7219_8x8](https://github.com/alankrantas/pxt-MAX7219_8x8). Press enter and click the extension.
 
 ![led-matrix-display-8x8-dots-rood-max7219-bovenkant](https://user-images.githubusercontent.com/44191076/50701188-d0ba2400-1087-11e9-9588-d57f678010d7.jpg)
 
@@ -20,7 +20,7 @@ For the module at the head of the chain, connect it to micro:bit as follows:
 * CS (LOAD pin) -> any pin you want (default P16)
 * CLK (SCK in SPI) -> default P13
 
-MISO or MI (default P14) is not used.
+MISO or MI (default P14) is not used, but included anyway for SPI pins are reassigned together.
 
 Of course, you can reassign these SPI pins in anyway you want; just use the setup block and remember to set the correct number of matrixs.
 
@@ -30,9 +30,7 @@ The rest of the modules (if any) are connected as follows:
 
 ![untitled sketch_bb](https://user-images.githubusercontent.com/44191076/51085259-ae07c980-1771-11e9-8b82-60d474c336fd.jpg)
 
-It's basicly the same as the first one, except all module's DIN connects to DOUT on the previous one.
-
-Be noted that in the wiring picture above the order of the pins are slightly different (for example, CS and CLK) from the module I used.
+It's basicly the same as the first one, except all module's DIN connects to DOUT on the previous one. Be noted that in the wiring picture above the order of the pins are slightly different (for example, CS and CLK) from the module I used.
 
 In my test the 3.3V power from micro:bit itself (90mA) is sufficient to power 4 chained MAX7219 modules. You may need more for a longer matrix chain.
 
@@ -40,13 +38,13 @@ In my test the 3.3V power from micro:bit itself (90mA) is sufficient to power 4 
 
 This extension assumes that you arrange single MAX7219 modules as a "chain", that they linked into a larger horizonal LED display.
 
-If you are using seperated matrix modules, the one nearest to micro:bit on the left has the highest index number (total number - 1), and the furthest one (far right) has index of 0. Index is useful if you want to print something to a specific module.
+For linked individual matrix modules, the one directly connected to micro:bit has the highest index number (total number - 1), and the furthest one (far right) has index of 0. You can use the index number to print something onto a specific module.
 
 ![img_0004](https://user-images.githubusercontent.com/44191076/50699988-5e941000-1084-11e9-841e-5ff173872540.JPG)
 
 ## Matrix Rotation/Reverse Printing Order
 
-Some people use the 4-in-1 MAX7219 modules, which are 4 matrixs already linked together. They may be wired in different directions and/or order.
+Some people use the 4-in-1 MAX7219 modules, which are 4 matrixs already linked together, but wired in different directions and/or order.
 
 ![max7219-dot - main-500x500](https://user-images.githubusercontent.com/44191076/53904356-d2e93080-4080-11e9-96bd-c1c3e5111a4b.jpg)
 
@@ -54,7 +52,7 @@ You can choose to rotate and reverse the display by using the following block in
 
 ![1](https://user-images.githubusercontent.com/44191076/54478164-47268f80-484a-11e9-98de-76c1406e43e3.jpg)
 
-Be warned that the extra rotation/reverse process slow down the text scrolling/refreshing speed. You can reduce the scrolling delay time to 0.
+Warning: the extra rotation/reverse calculating process slow down the text scrolling/refreshing speed. You may have to reduce the scrolling delay time to 0.
 
 ## Text Scrolling
 
@@ -81,9 +79,9 @@ basic.forever(function () {
 
 ![img_0002](https://user-images.githubusercontent.com/44191076/50700052-88e5cd80-1084-11e9-843f-2fa339c39b6f.JPG)
 
-The scrolling text block shows the whole sentence by scrolling it from right to left, speed is adjustable. However, the program will not contiune to do anything until scrolling is finished.
+The scrolling text block shows the whole sentence by scrolling it from right to left, speed adjustable. However, the program will not contiune to do anything until scrolling is finished.
 
-Be noted that if you input a very very long string, the micro:bit may run out of memory and show a sad face with the error code 20.
+Be noted that if you put in a very very long string, the micro:bit may run out of memory and show the error code of 20.
 
 ## Text Printing
 
@@ -156,7 +154,7 @@ It would also be easier if you modify the 8x8 array variable in JavaScript mode.
 
 ## Known Issue Combining With Bluetooth Extension
 
-If you use Bluetooth extension along with this extension, you would get error code 20 (out of memory) on your micro:bit. It's probably because both extension use a lot of memory and there's not enough to run both.
+If you use Bluetooth extension along with this extension, you would get error code 20 (out of memory) on your micro:bit. It's probably because the BLuetooth extension use a lot of memory and there's not enough RAM to run both.
 
 ## License
 
