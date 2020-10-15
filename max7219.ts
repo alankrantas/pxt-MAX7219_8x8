@@ -207,7 +207,7 @@ namespace max7219_matrix {
     /**
     * Print a text accross the chain of MAX7219 matrixs at a specific spot. Offset value -8 ~ last column of matrixs. You can choose to clear the screen or not (if not it can be used to print multiple string on the MAX7219 chain).
     */
-    //% block="Display text $text|offset $offset|clear screen first $clear" text.defl="Hi!" offset.min=-8 clear.defl=true group="2. Display text on matrixs" blockExternalInputs=true
+    //% block="Display text (align left) $text|offset $offset|clear screen first $clear" text.defl="Hi!" offset.min=-8 clear.defl=true group="2. Display text on matrixs" blockExternalInputs=true
     export function displayText(text: string, offset: number, clear: boolean) {
         // clear screen and array if needed
         if (clear) {
@@ -251,6 +251,19 @@ namespace max7219_matrix {
             }
             matrixCountdown--
         }
+    }
+    
+    /**
+    * Print a text on the chain of MAX7219 matrixs and automatically align to the right.
+    */
+    //% block="Display text (align right) $text|clear screen first $clear" text.defl="Hi!" clear.defl=true group="2. Display text on matrixs" blockExternalInputs=true
+    export function displayTextAlignRight(text: string, clear: boolean) {
+        let len = 0
+        for (let i = 0; i < text.length; i++) {
+            let index = font.indexOf(text.substr(i, 1))
+            if (index >= 0) len += font_matrix[index].length
+        }
+        displayText(text, _matrixNum * 8 - len, clear)
     }
 
     /**
